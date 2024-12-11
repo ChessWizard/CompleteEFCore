@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F9CAB818-57B4-43BC-AED0-5F2AB218D4AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompleteEFCore.BuildingBlocks", "src\CompleteEFCore.BuildingBlocks\CompleteEFCore.BuildingBlocks.csproj", "{F23B7372-1F23-41DB-8BC3-3B1B83C4060D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompleteEFCore.API", "src\CompleteEFCore.API\CompleteEFCore.API.csproj", "{ABDEE6BE-3D8A-4393-8A4B-466D9C69D6D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F23B7372-1F23-41DB-8BC3-3B1B83C4060D} = {F9CAB818-57B4-43BC-AED0-5F2AB218D4AA}
+		{ABDEE6BE-3D8A-4393-8A4B-466D9C69D6D5} = {F9CAB818-57B4-43BC-AED0-5F2AB218D4AA}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F23B7372-1F23-41DB-8BC3-3B1B83C4060D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F23B7372-1F23-41DB-8BC3-3B1B83C4060D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F23B7372-1F23-41DB-8BC3-3B1B83C4060D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F23B7372-1F23-41DB-8BC3-3B1B83C4060D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABDEE6BE-3D8A-4393-8A4B-466D9C69D6D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABDEE6BE-3D8A-4393-8A4B-466D9C69D6D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABDEE6BE-3D8A-4393-8A4B-466D9C69D6D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABDEE6BE-3D8A-4393-8A4B-466D9C69D6D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
