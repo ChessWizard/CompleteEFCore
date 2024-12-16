@@ -28,7 +28,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\Filter\GetAdvancedFilteredProducts\" />
       <Folder Include="Infrastructure\" />
     </ItemGroup>
 

@@ -8,8 +8,8 @@ public class GetFilteredProductsEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet(pattern: "/Filter/GetFilteredProducts",
-                handler: async ([AsParameters]ProductFilterDto filters, ISender sender) =>
+        app.MapPost(pattern: "/Filters/GetFilteredProducts",
+                handler: async (ProductFilterDto filters, ISender sender) =>
                 {
                     GetFilteredProductsQuery query = new(filters);
                     var result = await sender.Send(query);

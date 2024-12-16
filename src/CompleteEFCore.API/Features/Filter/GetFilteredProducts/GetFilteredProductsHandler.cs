@@ -1,6 +1,8 @@
+using System.Linq.Expressions;
 using System.Net;
 using CompleteEFCore.API.Domain.Entities.Northwind;
 using CompleteEFCore.API.Features.Common.Models.Response;
+using CompleteEFCore.API.Features.Filter.Common.Enums;
 using CompleteEFCore.BuildingBlocks.CQRS.Query;
 using CompleteEFCore.BuildingBlocks.Result;
 using LinqKit;
@@ -15,50 +17,83 @@ public class GetFilteredProductsQueryHandler(NorthwindContext context) : IQueryH
 {
     public async Task<Result<List<NorthwindProductDto>>> Handle(GetFilteredProductsQuery request, CancellationToken cancellationToken)
     {
-        var filterPredicate = GetProductFilters(request.ProductFilterDto);
+        var filters = CreateProductFilters(request.ProductFilterDto);
         var products = await context.Products
                                                 .AsExpandable()
-                                                .Where(filterPredicate)
+                                                .Where(filters)
                                                 .ToListAsync(cancellationToken);
         
         var result = products.Adapt<List<NorthwindProductDto>>();
         return Result<List<NorthwindProductDto>>.Success(result, (int)HttpStatusCode.OK);
     }
 
-    private ExpressionStarter<Product> GetProductFilters(ProductFilterDto productFilterDto)
+    private static ExpressionStarter<Product> CreateProductFilters(ProductFilterDto productFilterDto)
     {
         var productPredicate = PredicateBuilder.New<Product>(true);
 
-        if (productFilterDto.CategoryId.HasValue)
+        if (productFilterDto.CategoryFilters is not null)
         {
-            productPredicate.And(product => product.CategoryId == productFilterDto.CategoryId);
+            foreach (var categoryFilter in productFilterDto.CategoryFilters)
+            {
+                ApplyCondition(productPredicate, 
+                    product => product.CategoryId.GetValueOrDefault() == categoryFilter.Value,
+                    categoryFilter.Operator);
+            } 
         }
         
-        if(productFilterDto.SupplierId.HasValue)
+        if(productFilterDto.SupplierFilters is not null)
         {
-            productPredicate.And(product => product.SupplierId == productFilterDto.SupplierId);
+            foreach (var supplierFilter in productFilterDto.SupplierFilters)
+            {
+                ApplyCondition(productPredicate,
+                    product => product.SupplierId.GetValueOrDefault() == supplierFilter.Value,
+                    supplierFilter.Operator);
+            }
         }
 
-        if (!string.IsNullOrWhiteSpace(productFilterDto.SearchProductNameKeyword))
+        if (productFilterDto.ProductNameFilters is not null)
         {
-            productPredicate.And(product => product.ProductName.Contains(productFilterDto.SearchProductNameKeyword));
+            foreach (var productNameFilter in productFilterDto.ProductNameFilters)
+            {
+                ApplyCondition(productPredicate,
+                    product => product.ProductName.ToLower()
+                        .Contains(productNameFilter.Value.ToLower()),
+                    productNameFilter.Operator);
+            }
         }
 
-        if (productFilterDto.UnitPriceMinValue.HasValue)
+        if (productFilterDto.UnitFilters is not null)
         {
-            productPredicate.And(product => product.UnitPrice >= productFilterDto.UnitPriceMinValue);
-        }
-
-        if (productFilterDto.UnitPriceMaxValue.HasValue)
-        {
-            productPredicate.And(product => product.UnitPrice <= productFilterDto.UnitPriceMaxValue);
-        }
-
-        if (productFilterDto.Discounted.HasValue)
-        {
-            productPredicate.And(product => product.Discontinued == productFilterDto.Discounted);
+            foreach (var unitFilter in productFilterDto.UnitFilters)
+            {
+                var minValue = unitFilter.Value.MinValue;
+                var maxValue = unitFilter.Value.MaxValue;
+                
+                ApplyCondition(productPredicate,
+                    product => product.UnitPrice.GetValueOrDefault() >= minValue &&
+                                       product.UnitPrice.GetValueOrDefault() <= maxValue,
+                    unitFilter.Operator);
+            }
         }
 
         return productPredicate;
+    }
+
+    private static void ApplyCondition(
+        ExpressionStarter<Product> predicate,
+        Expression<Func<Product, bool>> condition,
+        LogicalOperator logicalOperator)
+    {
+        switch (logicalOperator)
+        {
+            case LogicalOperator.And:
+                predicate.And(condition);
+                break;
+            case LogicalOperator.Or:
+                predicate.Or(condition);
+                break;
+            default:
+                throw new ArgumentException("Invalid logical operator. Use 'AND' or 'OR'.");
+        }
     }
 }

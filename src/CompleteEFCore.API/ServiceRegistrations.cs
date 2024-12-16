@@ -35,7 +35,7 @@ public static class ServiceRegistrations
                    options.UseNpgsql(builder.Configuration.GetSection("DbConnection:Northwind").Value);
                });
     }
-    
+
     public static void ConfigureLibraries(this WebApplication app)
     {
         // Swagger
